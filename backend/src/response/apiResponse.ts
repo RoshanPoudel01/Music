@@ -10,6 +10,7 @@ interface APIResponseProps<T> {
   pagination?: Pagination;
   token?: string;
   error?: Error | string | string[] | { [key: string]: string[] };
+  totalItems?: number;
 }
 
 export const APIResponse = <T>({
@@ -21,6 +22,7 @@ export const APIResponse = <T>({
   pagination,
   error,
   token,
+  totalItems,
 }: APIResponseProps<T>): void => {
   const response = {
     data,
@@ -30,6 +32,7 @@ export const APIResponse = <T>({
     statusCode,
     message,
     error,
+    totalItems,
   };
 
   res.status(statusCode).send(response);

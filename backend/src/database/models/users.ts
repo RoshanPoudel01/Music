@@ -13,7 +13,8 @@ const createUserTableQuery = `
     dob DATE  NULL,
     address VARCHAR(100)  NULL,
     gender gender_enum NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
   );
 `;
 

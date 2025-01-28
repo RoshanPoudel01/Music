@@ -111,7 +111,7 @@ const useAuthentication = () => {
 };
 
 const fetchInitData = () => {
-  return artistHttpClient.get(api.auth.me);
+  return artistHttpClient.get(api.auth.initData);
 };
 
 const useFetchInitData = (enabled: boolean) => {

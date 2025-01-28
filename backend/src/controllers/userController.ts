@@ -1,8 +1,14 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import Joi from "joi";
+import jwt from "jsonwebtoken";
 import db from "../database";
 import { APIResponse } from "../response/apiResponse";
+
+import { config } from "dotenv";
+
+config();
+
 export interface RootInterface {
   id: number;
   first_name: string;
@@ -55,7 +61,11 @@ const createUserSchema = Joi.object({
   id: Joi.number().optional(), // Only present for updates
 });
 
-const validate = (schema: Joi.ObjectSchema, data: any, isNew: boolean) => {
+export const validate = (
+  schema: Joi.ObjectSchema,
+  data: any,
+  isNew: boolean
+) => {
   const { error } = schema.validate(data, {
     abortEarly: false,
     context: { isNew },
@@ -110,7 +120,6 @@ const executeQuery = async (
 
 // Create or update a user
 const createUser = async (req: Request, res: Response) => {
-  // const { id } = req.params;
   const validationErrors = validate(createUserSchema, req.body, !req.params.id);
   if (validationErrors) {
     return APIResponse({
@@ -151,7 +160,7 @@ const createUser = async (req: Request, res: Response) => {
 
     if (id) {
       // Update existing user
-      const query = `UPDATE users SET first_name = $1, last_name = $2, email = $3,  phone = $4, dob = $5, address = $6, gender = $7 WHERE id = $8 RETURNING *`;
+      const query = `UPDATE users SET first_name = $1, last_name = $2, email = $3,  phone = $4, dob = $5, address = $6, gender = $7,updated_at = NOW() WHERE id = $8 RETURNING *`;
       const values = [
         first_name,
         last_name,
@@ -239,13 +248,38 @@ const loginUser = async (req: Request, res: Response) => {
     // Exclude password before sending the response
     const { password: _, ...userWithoutPassword } = user;
 
-    return APIResponse({
-      res,
-      statusCode: 200,
-      status: 1,
-      data: userWithoutPassword,
-      message: "Login successful",
-    });
+    // Create JWT token
+    const payload = {
+      id: user.id,
+      email: user.email,
+    };
+
+    const secretKey = process.env.JWT_SECRET ?? "randomSecretKey";
+    const token = jwt.sign(payload, secretKey, { expiresIn: "1h" }); // Token expires in 1 hour
+    const tokenDetails = jwt.decode(token);
+    if (
+      typeof tokenDetails === "object" &&
+      tokenDetails !== null &&
+      "exp" in tokenDetails
+    ) {
+      const expirationTime = tokenDetails.exp as number; // `exp` is in seconds
+
+      // Send the response with the token
+      return APIResponse({
+        res,
+        statusCode: 200,
+        status: 1,
+        data: {
+          ...userWithoutPassword,
+          tokenDetails: { token: token, expiresIn: expirationTime },
+        },
+        message: "Login successful",
+      });
+    } else {
+      console.error(
+        "Decoded token is not a valid JwtPayload or does not contain `exp`."
+      );
+    }
   } catch (err) {
     return APIResponse({
       res,
@@ -258,15 +292,21 @@ const loginUser = async (req: Request, res: Response) => {
 };
 
 const getAllUsers = async (req: Request, res: Response) => {
-  const query = `SELECT * FROM users`;
+  const { page = 0, limit = 10 } = req.query;
+  const pageNumber = Number(page);
+  const offset = pageNumber;
+  const dataCountQuery = `SELECT COUNT(*) FROM users`;
+  const query = `SELECT * FROM users ORDER BY id OFFSET $1 LIMIT $2`;
   try {
-    const { rows } = await db.query(query);
+    const { rows: dataCountRows } = await db.query(dataCountQuery);
+    const { rows } = await db.query(query, [offset, limit]);
     const data = excludeSensitiveFields(rows);
     return APIResponse({
       res,
       statusCode: 200,
       status: 1,
       data,
+      totalItems: dataCountRows[0].count,
     });
   } catch (err) {
     return APIResponse({
@@ -295,6 +335,7 @@ const getUserById = async (req: Request, res: Response) => {
 
 const deleteUser = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
+  console.log(req.userId);
   const query = `DELETE FROM users WHERE id = $1 RETURNING *`;
 
   return executeQuery(

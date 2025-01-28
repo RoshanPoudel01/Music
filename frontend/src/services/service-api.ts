@@ -12,7 +12,7 @@ export interface IParams {
 const auth = {
   login: "/users/login",
   register: "/users/register",
-  me: "/me",
+  initData: "/init-data",
 };
 
 const users = {
