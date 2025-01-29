@@ -8,6 +8,7 @@ import {
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { artistHttpClient } from "./service-axios";
+import { IPageParams } from "./service-response";
 
 interface IQueryProps {
   url: string;
@@ -17,6 +18,7 @@ interface IQueryProps {
   enabled?: boolean;
   queryKey?: QueryKey;
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  pageParams?: IPageParams;
 }
 
 export interface IData<T> {
@@ -26,9 +28,14 @@ export interface IData<T> {
 
 //getMethod
 
-const useFetch = <T>({ url, enabled, queryKey }: IQueryProps) => {
+const useFetch = <T>({ url, enabled, queryKey, pageParams }: IQueryProps) => {
   const fetchData = (): Promise<AxiosResponse<T>> => {
-    return artistHttpClient.get(url);
+    return artistHttpClient.get(url, {
+      params: {
+        page: pageParams?.pageIndex,
+        limit: pageParams?.pageSize,
+      },
+    });
   };
   return useQuery({
     queryKey: queryKey ?? [url],
@@ -65,7 +72,6 @@ const useMutate = <T>({
     mutationFn: sendData,
     onSuccess: (response) => {
       if (invalidates) {
-        console.log({ invalidates });
         invalidates.forEach((endpoint) => {
           queryClient.invalidateQueries({
             predicate: (query) => {

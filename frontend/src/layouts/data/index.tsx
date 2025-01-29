@@ -7,4 +7,14 @@ export const sidebarItems = [
     icon: <House />,
     to: NAVIGATION_ROUTES.DASHBOARD,
   },
+  {
+    title: "Users",
+    icon: <House />,
+    to: NAVIGATION_ROUTES.USERS,
+  },
+  {
+    title: "Artists",
+    icon: <House />,
+    to: NAVIGATION_ROUTES.ARTISTS,
+  },
 ];

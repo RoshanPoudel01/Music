@@ -1,32 +1,38 @@
 import { EmptyState } from "@artist/components/ui/empty-state";
 import { SkeletonText } from "@artist/components/ui/skeleton";
-import { useSearchParamsState } from "@artist/hooks/useSearchParamState";
-import { IPagination } from "@artist/services/service-response";
 import { Card, CardRootProps, Flex, Icon, Table, Text } from "@chakra-ui/react";
 import { ArrowDown, ArrowUp } from "@phosphor-icons/react";
 import {
   ColumnDef,
-  ColumnFiltersState,
   FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
+  Updater,
   useReactTable,
 } from "@tanstack/react-table";
-import { Dispatch, FC, ReactNode, SetStateAction, useState } from "react";
+import { Dispatch, FC, ReactNode, SetStateAction, useMemo } from "react";
 import Pagination from "./Pagination";
 
 interface IDataTable {
   data: Record<string, any>[];
-  count?: number;
   children?: ReactNode;
   columns: ColumnDef<any, any>[];
   isLoading?: boolean;
   showPagination?: boolean;
   manualPagination?: boolean;
-  pagination?: IPagination;
+  pagination?: {
+    manual?: boolean;
+    pageCount?: number;
+    pageParams?: {
+      pageIndex: number;
+      pageSize: number;
+    };
+    onChangePagination?: (paginationData: Updater<PaginationState>) => void;
+  };
   filter?: {
     globalFilter: string;
     setGlobalFilter: Dispatch<SetStateAction<string>>;
@@ -52,41 +58,52 @@ const filterFunction: FilterFn<any> = (rows, id, value) => {
 const DataTable: FC<IDataTable & CardRootProps> = ({
   data,
   columns,
-  count,
   children,
   isLoading,
-  showPagination = true,
-  manualPagination = true,
   pagination,
   filter,
   ...rest
   // handlePageSize,
 }) => {
-  const { pageIndex } = useSearchParamsState();
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [page] = useState<number>(1);
-  const [pageSize, _] = useState<number>(10);
+  const totalPage = Math.ceil(
+    (pagination?.pageCount ?? 0) / (pagination?.pageParams?.pageSize ?? 20)
+  );
+  const paginationParams = useMemo(
+    () =>
+      pagination?.manual
+        ? {
+            manualPagination: true,
+            pageCount: totalPage ?? -1,
+            onPaginationChange: pagination?.onChangePagination,
+          }
+        : {
+            getPaginationRowModel: getPaginationRowModel(),
+          },
+    [pagination]
+  );
   const table = useReactTable({
     columns,
     data,
-    manualPagination: manualPagination,
-    state: {
-      columnFilters,
-      globalFilter: filter?.globalFilter?.trim() || "",
-      pagination: {
-        pageIndex,
-        pageSize: pagination?.perPage ?? pageSize,
-      },
-    },
+    state: pagination?.manual
+      ? {
+          globalFilter: filter?.globalFilter?.trim(),
+          pagination: {
+            pageIndex: pagination.pageParams?.pageIndex ?? 0,
+            pageSize: pagination.pageParams?.pageSize ?? 20,
+          },
+        }
+      : {
+          globalFilter: filter?.globalFilter?.trim(),
+        },
 
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnFiltersChange: setColumnFilters,
     globalFilterFn: filterFunction,
     onGlobalFilterChange: filter?.setGlobalFilter,
+    ...paginationParams,
   });
 
   return (
@@ -174,7 +191,7 @@ const DataTable: FC<IDataTable & CardRootProps> = ({
                     </Table.Row>
                   ))}
                 </>
-              ) : pagination?.total === 0 || data.length === 0 ? (
+              ) : pagination?.pageCount === 0 || data.length === 0 ? (
                 <Table.Row>
                   <Table.Cell
                     border={0}
@@ -221,9 +238,10 @@ const DataTable: FC<IDataTable & CardRootProps> = ({
       {pagination && (
         <Card.Footer>
           <Pagination
-            pageSize={pagination?.perPage}
-            count={pagination?.total}
-            pageIndex={pageIndex ?? page}
+            pageCount={pagination?.pageCount ?? 0}
+            pageIndex={pagination?.pageParams?.pageIndex ?? 0}
+            table={table}
+            isBackendPaginated={pagination?.manual}
           />
         </Card.Footer>
       )}

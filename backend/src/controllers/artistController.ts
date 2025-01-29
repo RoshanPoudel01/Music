@@ -1,9 +1,12 @@
+import { parse } from "csv-parse";
 import { Request, Response } from "express";
 import Joi from "joi";
+import path from "path";
+import { Readable } from "stream";
+import * as XLSX from "xlsx";
 import db from "../database";
 import { APIResponse } from "../response/apiResponse";
 import { validate } from "./userController";
-
 // Interfaces
 export interface ArtistInterface {
   id: number;
@@ -135,10 +138,10 @@ const createArtist = async (req: Request, res: Response) => {
 const getAllArtists = async (req: Request, res: Response) => {
   const { page = 0, limit = 10 } = req.query;
   const pageNumber = Number(page);
-  const offset = pageNumber;
+  const offset = pageNumber * Number(limit);
+
   const dataCountQuery = `SELECT COUNT(*) FROM artists`;
   const query = `SELECT * FROM artists ORDER BY id OFFSET $1 LIMIT $2`;
-
   try {
     const { rows: dataCountRows } = await db.query(dataCountQuery);
     const { rows } = await db.query(query, [offset, limit]);
@@ -222,10 +225,159 @@ const deleteArtist = async (req: Request, res: Response) => {
     });
   }
 };
+// Validate single artist data
+const validateArtistData = (artist: any) => {
+  // Basic validation
+  if (!artist.name) {
+    return "Artist name is required";
+  }
+
+  if (
+    artist.gender &&
+    !["male", "female", "other"].includes(artist.gender.toLowerCase())
+  ) {
+    return "Invalid gender value";
+  }
+
+  if (artist.first_release_year && isNaN(Number(artist.first_release_year))) {
+    return "Invalid first release year";
+  }
+
+  if (
+    artist.no_of_albums_released &&
+    isNaN(Number(artist.no_of_albums_released))
+  ) {
+    return "Invalid number of albums";
+  }
+
+  return null;
+};
+
+// Process CSV data
+const processCSV = (buffer: Buffer): Promise<any[]> => {
+  return new Promise((resolve, reject) => {
+    const results: any[] = [];
+    const stream = Readable.from(buffer.toString());
+
+    stream
+      .pipe(
+        parse({
+          columns: true,
+          skip_empty_lines: true,
+          trim: true,
+        })
+      )
+      .on("data", (data) => results.push(data))
+      .on("error", (error) => reject(error))
+      .on("end", () => resolve(results));
+  });
+};
+
+// Process Excel data
+const processExcel = (buffer: Buffer): any[] => {
+  const workbook = XLSX.read(buffer, { type: "buffer" });
+  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+  return XLSX.utils.sheet_to_json(firstSheet);
+};
+
+const bulkUploadArtists = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return APIResponse({
+        res,
+        statusCode: 400,
+        status: 0,
+        message: "No file uploaded",
+      });
+    }
+
+    let artists: any[] = [];
+    const fileExt = path.extname(req.file.originalname).toLowerCase();
+
+    // Parse file based on type
+    if (fileExt === ".csv") {
+      artists = await processCSV(req.file.buffer);
+    } else {
+      artists = processExcel(req.file.buffer);
+    }
+
+    // Validate and process artists
+    const results = {
+      successful: 0,
+      failed: 0,
+      errors: [] as string[],
+    };
+
+    for (const artist of artists) {
+      // Validate artist data
+      const validationError = validateArtistData(artist);
+      if (validationError) {
+        results.failed++;
+        results.errors.push(validationError);
+        continue;
+      }
+
+      try {
+        // Insert artist into database
+        const query = `
+          INSERT INTO artists (
+            name, dob, gender, address, 
+            first_release_year, no_of_albums_released
+          ) 
+          VALUES ($1, $2, $3, $4, $5, $6)`;
+
+        const values = [
+          artist.name,
+          artist.dob || null,
+          artist.gender?.toLowerCase() || null,
+          artist.address || null,
+          artist.first_release_year || null,
+          artist.no_of_albums_released || null,
+        ];
+
+        await db.query(query, values);
+        results.successful++;
+      } catch (error) {
+        results.failed++;
+        results.errors.push(
+          `Database error for ${artist.name}: ${(error as Error).message}`
+        );
+      }
+    }
+
+    if (results.failed === 0) {
+      return APIResponse({
+        res,
+        statusCode: 201,
+        status: 1,
+        message: "Artists uploaded successfully",
+        data: results,
+      });
+    } else {
+      return APIResponse({
+        res,
+        statusCode: 207,
+        status: 0,
+        message: "Some artists failed to upload",
+        data: null,
+        error: results.errors,
+      });
+    }
+  } catch (err) {
+    return APIResponse({
+      res,
+      statusCode: 500,
+      status: 0,
+      message: "An error occurred during bulk upload",
+      error: (err as Error).message,
+    });
+  }
+};
 
 export const ArtistController = {
   createArtist,
   getAllArtists,
   getArtistById,
   deleteArtist,
+  bulkUploadArtists,
 };

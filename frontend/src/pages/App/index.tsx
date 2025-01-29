@@ -1,8 +1,4 @@
-import {
-  useAuthentication,
-  useFetchInitData,
-  useLogout,
-} from "@artist/services/service-auth";
+import { useAuthentication, useLogout } from "@artist/services/service-auth";
 import Loader from "@artist/utils/Loader";
 import { Flex } from "@chakra-ui/react";
 import { ReactNode, Suspense, useEffect } from "react";
@@ -58,8 +54,6 @@ const App = () => {
   } = useAuthentication();
   const { mutateAsync: logout } = useLogout();
   // Fetching initial data in the app
-  const { isLoading: isInitDataLoading, isError: isInitDataError } =
-    useFetchInitData(!!isAuthenticated);
 
   useEffect(() => {
     if (typeof isAuthenticated === "boolean" && !isAuthenticated) {
@@ -67,7 +61,7 @@ const App = () => {
     }
   }, [isAuthenticated, logout]);
 
-  if ((isAuthLoading || isInitDataLoading) && !isError && !isInitDataError) {
+  if (isAuthLoading && !isError) {
     return (
       <Flex h={"100dvh"} w={"100dvw"} justify={"center"} align={"center"}>
         <Loader />

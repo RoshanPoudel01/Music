@@ -1,11 +1,11 @@
 import { api } from "./service-api";
 import { useFetch, useMutate } from "./service-form-methods";
-import { RootInterface } from "./service-response";
+import { IPageParams, RootInterface } from "./service-response";
 
 export interface UserResponse {
   id: number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
   address: string;
@@ -24,10 +24,11 @@ const useRegisterUser = () => {
   });
 };
 
-const useFetchUsers = () => {
+const useFetchUsers = (pageParams: IPageParams) => {
   return useFetch<RootInterface<UserResponse>>({
     url: api.users.index,
     queryKey: ["users"],
+    pageParams,
   });
 };
 

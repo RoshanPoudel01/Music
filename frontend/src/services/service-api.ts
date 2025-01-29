@@ -12,14 +12,19 @@ export interface IParams {
 const auth = {
   login: "/users/login",
   register: "/users/register",
-  initData: "/init-data",
+  initData: "/users/init",
 };
 
 const users = {
   index: "/users",
 };
 
+const artists = {
+  index: "/artist",
+};
+
 export const api = {
   auth,
   users,
+  artists,
 };

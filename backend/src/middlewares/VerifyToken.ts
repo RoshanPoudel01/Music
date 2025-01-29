@@ -29,7 +29,6 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 
     // Add userId to the request object
     req.userId = decoded.id;
-
     next();
   } catch (error) {
     return APIResponse({

@@ -29,15 +29,14 @@ const useLogin = () => {
     mutationFn: initLogin,
     onSuccess: (response) => {
       const token = {
-        token: response?.data?.tokenDetails?.token,
-        expiresIn: response?.data?.tokenDetails?.expiresIn,
+        token: response?.data?.data?.tokenDetails?.token,
+        expiresIn: response?.data?.data?.tokenDetails?.expiresIn,
       };
-
       TokenService.setToken(token);
       queryClient.setQueryData([authTokenKey], () => true);
-      toast.success(response?.data?.message);
       setInitData(response?.data?.data);
       navigate("/", { replace: true });
+      toast.success(response?.data?.message);
     },
     onError: (error) => {
       const err = error as AxiosError<{ error: string; message: string }>;
@@ -110,29 +109,4 @@ const useAuthentication = () => {
   });
 };
 
-const fetchInitData = () => {
-  return artistHttpClient.get(api.auth.initData);
-};
-
-const useFetchInitData = (enabled: boolean) => {
-  const { setInitData } = useInitDataStore();
-
-  return useQuery({
-    queryKey: ["initData"],
-    queryFn: async () => {
-      const initData = await fetchInitData();
-      setInitData(initData?.data?.data);
-      return initData?.data;
-    },
-    enabled,
-    retry: 1,
-  });
-};
-
-export {
-  checkAuthentication,
-  useAuthentication,
-  useFetchInitData,
-  useLogin,
-  useLogout,
-};
+export { checkAuthentication, useAuthentication, useLogin, useLogout };

@@ -121,10 +121,9 @@ const createMusic = async (req: Request, res: Response) => {
 };
 
 const getAllMusic = async (req: Request, res: Response) => {
-  console.log("here");
   const { page = 0, limit = 10, artist_id } = req.query;
   const pageNumber = Number(page);
-  const offset = pageNumber;
+  const offset = pageNumber * Number(limit);
 
   let query = `
       SELECT m.*, a.name as artist_name 

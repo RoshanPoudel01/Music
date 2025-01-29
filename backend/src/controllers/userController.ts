@@ -256,30 +256,20 @@ const loginUser = async (req: Request, res: Response) => {
 
     const secretKey = process.env.JWT_SECRET ?? "randomSecretKey";
     const token = jwt.sign(payload, secretKey, { expiresIn: "1h" }); // Token expires in 1 hour
-    const tokenDetails = jwt.decode(token);
-    if (
-      typeof tokenDetails === "object" &&
-      tokenDetails !== null &&
-      "exp" in tokenDetails
-    ) {
-      const expirationTime = tokenDetails.exp as number; // `exp` is in seconds
 
-      // Send the response with the token
-      return APIResponse({
-        res,
-        statusCode: 200,
-        status: 1,
-        data: {
-          ...userWithoutPassword,
-          tokenDetails: { token: token, expiresIn: expirationTime },
-        },
-        message: "Login successful",
-      });
-    } else {
-      console.error(
-        "Decoded token is not a valid JwtPayload or does not contain `exp`."
-      );
-    }
+    const expirationTime = Date.now() + 60 * 60 * 1000;
+
+    // Send the response with the token
+    return APIResponse({
+      res,
+      statusCode: 200,
+      status: 1,
+      data: {
+        ...userWithoutPassword,
+        tokenDetails: { token: token, expiresIn: expirationTime },
+      },
+      message: "Login successful",
+    });
   } catch (err) {
     return APIResponse({
       res,
@@ -294,7 +284,8 @@ const loginUser = async (req: Request, res: Response) => {
 const getAllUsers = async (req: Request, res: Response) => {
   const { page = 0, limit = 10 } = req.query;
   const pageNumber = Number(page);
-  const offset = pageNumber;
+  const offset = pageNumber * Number(limit);
+
   const dataCountQuery = `SELECT COUNT(*) FROM users`;
   const query = `SELECT * FROM users ORDER BY id OFFSET $1 LIMIT $2`;
   try {
@@ -335,7 +326,6 @@ const getUserById = async (req: Request, res: Response) => {
 
 const deleteUser = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-  console.log(req.userId);
   const query = `DELETE FROM users WHERE id = $1 RETURNING *`;
 
   return executeQuery(
@@ -348,10 +338,30 @@ const deleteUser = async (req: Request, res: Response) => {
   );
 };
 
+const userData = async (req: Request, res: Response) => {
+  // const query = `Select * from users where id = $1`;
+  // const { rows } = await db.query(query);
+  // if (rows.length) {
+  return APIResponse({
+    res,
+    statusCode: 200,
+    status: 1,
+    message: "Data retrieved successfully",
+  });
+  // } else {
+  //   return APIResponse({
+  //     res,
+  //     statusCode: 404,
+  //     status: 0,
+  //     message: "No data found",
+  //   });
+  // }
+};
 export const UserController = {
   createUser,
   getAllUsers,
   getUserById,
   deleteUser,
   loginUser,
+  userData,
 };
