@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@artist/components/ui/dialog";
-import { Icon, IconButton } from "@chakra-ui/react";
+import { HStack, Icon, IconButton } from "@chakra-ui/react";
 import { Trash } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -45,6 +45,7 @@ const DeleteAlert: React.FC<IDeleteAlertProps> = ({
       unmountOnExit
       initialFocusEl={undefined}
       motionPreset={"slide-in-top"}
+      size={"sm"}
     >
       <DialogTrigger asChild>
         {trigger ?? (
@@ -61,8 +62,13 @@ const DeleteAlert: React.FC<IDeleteAlertProps> = ({
         )}
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader
+          py={4}
+          borderBottom={"1px solid"}
+          borderColor={"gray.200"}
+        >
           <DialogTitle>{heading ?? "Are you sure?"}</DialogTitle>
+          <DialogCloseTrigger colorPalette={"gray"} />
         </DialogHeader>
         <DialogBody>
           <DialogDescription>
@@ -71,26 +77,29 @@ const DeleteAlert: React.FC<IDeleteAlertProps> = ({
           </DialogDescription>
         </DialogBody>
         <DialogFooter>
-          <DialogActionTrigger asChild>
-            <Button colorPalette={"gray"} variant="outline">
-              {cancelText ?? "Cancel"}
+          <HStack w={"full"}>
+            <DialogActionTrigger asChild>
+              <Button w={"50%"} size={"sm"} variant="outline">
+                {cancelText ?? "Cancel"}
+              </Button>
+            </DialogActionTrigger>
+            <Button
+              colorPalette="red"
+              loading={isDeleteLoading}
+              onClick={async () => {
+                await onConfirm();
+                setOpen(false);
+              }}
+              w={"50%"}
+              size={"sm"}
+            >
+              <Icon asChild boxSize={5}>
+                <Trash />
+              </Icon>
+              {deleteText ?? "Delete"}
             </Button>
-          </DialogActionTrigger>
-          <Button
-            colorPalette="red"
-            loading={isDeleteLoading}
-            onClick={async () => {
-              await onConfirm();
-              setOpen(false);
-            }}
-          >
-            <Icon asChild boxSize={5}>
-              <Trash />
-            </Icon>
-            {deleteText ?? "Delete"}
-          </Button>
+          </HStack>
         </DialogFooter>
-        <DialogCloseTrigger />
       </DialogContent>
     </DialogRoot>
   );

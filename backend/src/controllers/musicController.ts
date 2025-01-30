@@ -35,11 +35,9 @@ const createMusicSchema = Joi.object({
 });
 
 const createMusic = async (req: Request, res: Response) => {
-  const validationErrors = validate(
-    createMusicSchema,
-    req.body,
-    !req.params.id
-  );
+  const { id, artist_id, title, album_name, genre } = req.body;
+
+  const validationErrors = validate(createMusicSchema, req.body, !id);
   if (validationErrors) {
     return APIResponse({
       res,
@@ -49,8 +47,6 @@ const createMusic = async (req: Request, res: Response) => {
       error: validationErrors,
     });
   }
-
-  const { id, artist_id, title, album_name, genre } = req.body;
 
   try {
     // Check if artist exists
@@ -155,7 +151,7 @@ const getAllMusic = async (req: Request, res: Response) => {
       statusCode: 200,
       status: 1,
       data: rows,
-      totalItems: dataCountRows[0].count,
+      totalItems: +dataCountRows[0].count,
     });
   } catch (err) {
     return APIResponse({

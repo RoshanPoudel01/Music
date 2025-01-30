@@ -20,6 +20,10 @@ export const appRoutes = [
         path: NAVIGATION_ROUTES.ARTISTS,
         element: NAVIGATION_PAGES.ARTIST,
       },
+      {
+        path: NAVIGATION_ROUTES.ARTISTS + "/:id/music",
+        element: NAVIGATION_PAGES.MUSIC,
+      },
     ],
   },
   {

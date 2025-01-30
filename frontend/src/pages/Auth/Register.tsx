@@ -15,11 +15,11 @@ import * as yup from "yup";
 import { NAVIGATION_ROUTES } from "../App/navigationRoutes";
 
 const schema = yup.object().shape({
-  firstName: yup.string().required("First Name is required"),
-  lastName: yup.string().required("Last Name is required"),
+  first_name: yup.string().required("First Name is required"),
+  last_name: yup.string().required("Last Name is required"),
   email: yup.string().email().required("Email is required"),
   password: yup.string().required("Password is required"),
-  confirmPassword: yup
+  confirm_password: yup
     .string()
     .oneOf([yup.ref("password"), undefined], "Passwords must match"),
   phone: yup.string().required("Phone is required"),
@@ -32,11 +32,11 @@ type RegisterFormValues = yup.InferType<typeof schema>;
 
 const Register = () => {
   const defaultValues = {
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    confirm_password: "",
     phone: "",
     address: "",
     dob: "",
@@ -50,8 +50,9 @@ const Register = () => {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
+    const { confirm_password, ...rest } = data;
     try {
-      const response = await register({ data });
+      const response = await register({ data: rest });
       if (response.data.status) {
         navigate("/");
       }
@@ -79,13 +80,13 @@ const Register = () => {
               <TextInput
                 control={control}
                 required
-                name="firstName"
+                name="first_name"
                 label="First Name"
               />
               <TextInput
                 control={control}
                 required
-                name="lastName"
+                name="last_name"
                 label="Last Name"
               />
               <TextInput
@@ -111,7 +112,7 @@ const Register = () => {
               <TextInput
                 control={control}
                 required
-                name="confirmPassword"
+                name="confirm_password"
                 type="password"
                 label="Confirm Password"
               />

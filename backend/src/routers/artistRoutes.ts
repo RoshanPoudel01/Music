@@ -8,7 +8,7 @@ const ArtistRouter = Router();
 ArtistRouter.post("/create-artist", verifyToken, ArtistController.createArtist);
 ArtistRouter.get("/", verifyToken, ArtistController.getAllArtists);
 ArtistRouter.get("/:id", verifyToken, ArtistController.getArtistById);
-ArtistRouter.put("/:id", verifyToken, ArtistController.createArtist);
+// ArtistRouter.put("/:id", verifyToken, ArtistController.createArtist);
 ArtistRouter.delete("/delete/:id", verifyToken, ArtistController.deleteArtist);
 ArtistRouter.post(
   "/upload",

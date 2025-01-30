@@ -1,17 +1,29 @@
 import { DataTable } from "@artist/components/DataTable";
+import { SearchInput } from "@artist/components/Form";
+import { DeleteAlert } from "@artist/components/Form/Modal";
 import { IPageParams, IRow } from "@artist/services/service-response";
-import { useFetchUsers, UserResponse } from "@artist/services/service-user";
+import {
+  useDeleteUser,
+  useFetchUsers,
+  UserResponse,
+} from "@artist/services/service-user";
 import PageHeader from "@artist/utils/PageHeader";
-import { Button, Stack } from "@chakra-ui/react";
+import { Button, HStack, Icon, IconButton, Stack } from "@chakra-ui/react";
+import { Pencil } from "@phosphor-icons/react";
 import moment from "moment";
 import { useState } from "react";
+import UserForm from "./Form";
 const Users = () => {
   const [pageParams, setPageParams] = useState<IPageParams>({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [searchText, setSearchText] = useState<string>("");
+
   const { data: usersData, isLoading: isUserGetLoading } =
     useFetchUsers(pageParams);
+  const { mutateAsync: deleteUser, isPending } = useDeleteUser();
+
   const columns = [
     {
       header: "S.N",
@@ -43,15 +55,49 @@ const Users = () => {
         return moment(row.original.dob).format("YYYY/MM/DD");
       },
     },
+    {
+      header: "Action",
+      cell: ({ row }: IRow<UserResponse>) => {
+        const { id } = row.original;
+
+        return (
+          <HStack>
+            <UserForm
+              rowId={id}
+              trigger={
+                <IconButton
+                  size={"sm"}
+                  variant={"subtle"}
+                  colorPalette={"blue"}
+                >
+                  <Icon boxSize={6} asChild>
+                    <Pencil />
+                  </Icon>
+                </IconButton>
+              }
+            />
+            <DeleteAlert
+              isDeleteLoading={isPending}
+              heading="Delete User"
+              description="Are you sure you want to delete this user?"
+              onConfirm={async () => {
+                try {
+                  await deleteUser({ id });
+                } catch (error) {
+                  console.error(error);
+                }
+              }}
+            />
+          </HStack>
+        );
+      },
+    },
   ];
 
   return (
     <>
       <PageHeader title="Users" />
       <Stack>
-        <Button marginLeft={"auto"} w={"max-content"}>
-          Add Users
-        </Button>
         <DataTable
           columns={columns}
           data={usersData?.data ?? []}
@@ -62,7 +108,17 @@ const Users = () => {
             pageParams: pageParams,
             onChangePagination: setPageParams,
           }}
-        />
+          filter={{
+            globalFilter: searchText,
+            setGlobalFilter: setSearchText,
+          }}
+        >
+          <HStack>
+            <SearchInput onSearch={setSearchText} />
+
+            <UserForm trigger={<Button colorScheme="teal">Add User</Button>} />
+          </HStack>
+        </DataTable>
       </Stack>
     </>
   );

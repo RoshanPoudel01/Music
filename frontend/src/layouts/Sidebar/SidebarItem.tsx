@@ -132,7 +132,7 @@ const SidebarItem: FC<ISidebarItemProps> = ({
         p={2}
         h={"full"}
         _currentPage={
-          pathname.split("/")[2] === item.to.split("/")[2] ? active : {}
+          pathname.split("/")[1] === item.to.split("/")[1] ? active : {}
         }
         w={"100%"}
         {...attributes}

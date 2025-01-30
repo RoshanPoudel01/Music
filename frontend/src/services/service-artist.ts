@@ -1,6 +1,6 @@
 import { api } from "./service-api";
-import { useFetch } from "./service-form-methods";
-import { IPageParams, RootInterface } from "./service-response";
+import { useFetch, useMutate } from "./service-form-methods";
+import { IPageParams, RootInterface, SingleResponse } from "./service-response";
 export interface ArtistResponse {
   id: number;
   name: string;
@@ -20,4 +20,29 @@ const useFetchArtists = (pageParams: IPageParams) => {
   });
 };
 
-export { useFetchArtists };
+const useFetchArtist = (id: number, enabled: boolean) => {
+  return useFetch<SingleResponse<ArtistResponse>>({
+    url: api.artists.byId.replace(":id", id + ""),
+    queryKey: ["artists", id],
+    enabled: !!id && enabled,
+  });
+};
+
+const useAddArtist = () => {
+  return useMutate({
+    url: api.artists.create,
+    invalidates: ["artists"],
+    message: "Artist added successfully",
+  });
+};
+
+const useDeleteArtist = () => {
+  return useMutate({
+    url: api.artists.delete,
+    invalidates: ["artists"],
+    message: "Artist deleted successfully",
+    method: "DELETE",
+  });
+};
+
+export { useAddArtist, useDeleteArtist, useFetchArtist, useFetchArtists };

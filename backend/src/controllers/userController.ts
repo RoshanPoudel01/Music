@@ -120,17 +120,6 @@ const executeQuery = async (
 
 // Create or update a user
 const createUser = async (req: Request, res: Response) => {
-  const validationErrors = validate(createUserSchema, req.body, !req.params.id);
-  if (validationErrors) {
-    return APIResponse({
-      res,
-      statusCode: 400,
-      status: 0,
-      message: "Validation failed.",
-      error: validationErrors,
-    });
-  }
-
   const {
     id,
     first_name,
@@ -142,6 +131,16 @@ const createUser = async (req: Request, res: Response) => {
     address,
     gender,
   } = req.body;
+  const validationErrors = validate(createUserSchema, req.body, !id);
+  if (validationErrors) {
+    return APIResponse({
+      res,
+      statusCode: 400,
+      status: 0,
+      message: "Validation failed.",
+      error: validationErrors,
+    });
+  }
 
   try {
     if (!id) {
@@ -297,7 +296,7 @@ const getAllUsers = async (req: Request, res: Response) => {
       statusCode: 200,
       status: 1,
       data,
-      totalItems: dataCountRows[0].count,
+      totalItems: +dataCountRows[0].count,
     });
   } catch (err) {
     return APIResponse({

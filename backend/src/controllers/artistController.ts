@@ -36,21 +36,6 @@ const createArtistSchema = Joi.object({
 
 // Artist Controller
 const createArtist = async (req: Request, res: Response) => {
-  const validationErrors = validate(
-    createArtistSchema,
-    req.body,
-    !req.params.id
-  );
-  if (validationErrors) {
-    return APIResponse({
-      res,
-      statusCode: 400,
-      status: 0,
-      message: "Validation failed.",
-      error: validationErrors,
-    });
-  }
-
   const {
     id,
     name,
@@ -60,6 +45,17 @@ const createArtist = async (req: Request, res: Response) => {
     first_release_year,
     no_of_albums_released,
   } = req.body;
+
+  const validationErrors = validate(createArtistSchema, req.body, !id);
+  if (validationErrors) {
+    return APIResponse({
+      res,
+      statusCode: 400,
+      status: 0,
+      message: "Validation failed.",
+      error: validationErrors,
+    });
+  }
 
   try {
     if (id) {
@@ -150,7 +146,7 @@ const getAllArtists = async (req: Request, res: Response) => {
       statusCode: 200,
       status: 1,
       data: rows,
-      totalItems: dataCountRows[0].count,
+      totalItems: +dataCountRows[0].count,
     });
   } catch (err) {
     return APIResponse({
