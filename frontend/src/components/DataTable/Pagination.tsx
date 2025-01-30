@@ -130,7 +130,7 @@ function Pagination({ isBackendPaginated, pageIndex, table }: IPagination) {
           {currentPage != 1 && PageNumberWrapper(currentPage - 1)}
           {PageNumberWrapper(currentPage, true)}
           {currentPage < totalPage && PageNumberWrapper(currentPage + 1)}
-          {/* {currentPage < totalPage - 1 && PageNumberWrapper(currentPage + 2)} */}
+          {currentPage < totalPage - 1 && PageNumberWrapper(currentPage + 2)}
           {totalPage < currentPage - 1 &&
             totalPage - 1 > 0 &&
             PageNumberWrapper(totalPage - 1)}

@@ -9,7 +9,7 @@ import {
 } from "@artist/services/service-user";
 import PageHeader from "@artist/utils/PageHeader";
 import { Button, HStack, Icon, IconButton, Stack } from "@chakra-ui/react";
-import { Pencil } from "@phosphor-icons/react";
+import { Pencil, Plus } from "@phosphor-icons/react";
 import moment from "moment";
 import { useState } from "react";
 import UserForm from "./Form";
@@ -116,7 +116,14 @@ const Users = () => {
           <HStack>
             <SearchInput onSearch={setSearchText} />
 
-            <UserForm trigger={<Button colorScheme="teal">Add User</Button>} />
+            <UserForm
+              trigger={
+                <Button colorScheme="teal">
+                  <Plus size={32} />
+                  Add User
+                </Button>
+              }
+            />
           </HStack>
         </DataTable>
       </Stack>

@@ -59,7 +59,7 @@ const ModalForm: FC<IModalFormProps & DialogContentProps> = ({
     <DialogRoot
       open={open}
       onOpenChange={onOpenChange}
-      scrollBehavior={"inside"}
+      // scrollBehavior={"inside"}
       lazyMount
       unmountOnExit
       motionPreset={"slide-in-top"}
@@ -68,6 +68,7 @@ const ModalForm: FC<IModalFormProps & DialogContentProps> = ({
       size={"xl"}
       closeOnInteractOutside={closeOnInteractOutside}
       initialFocusEl={undefined}
+      onExitComplete={onClose}
     >
       <DialogTrigger asChild>
         {trigger ? (

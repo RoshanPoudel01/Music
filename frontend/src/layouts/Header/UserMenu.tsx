@@ -6,11 +6,14 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@artist/components/ui/menu";
+import ChangePassword from "@artist/pages/Password";
 import { useLogout } from "@artist/services/service-auth";
-import { Icon } from "@chakra-ui/react";
-import { SignOut } from "@phosphor-icons/react";
+import { useInitDataStore } from "@artist/store";
+import { Icon, Stack, Text } from "@chakra-ui/react";
+import { Gear, SignOut } from "@phosphor-icons/react";
 
 const UserMenu = () => {
+  const { initData } = useInitDataStore();
   const { mutateAsync: logout } = useLogout();
   return (
     <MenuRoot
@@ -19,10 +22,33 @@ const UserMenu = () => {
         placement: "bottom-end",
       }}
     >
-      <MenuTrigger outline={"none"} cursor={"pointer"}>
-        <Avatar name="Admin" src={imageAssets.Avatar} />
+      <MenuTrigger
+        outline={"none"}
+        cursor={"pointer"}
+        display={"flex"}
+        alignItems={"center"}
+        justifyContent={"space-between"}
+        gap={2}
+      >
+        <Avatar name={initData?.first_name} src={imageAssets.Avatar} />
+        <Stack gap={0} alignItems={"flex-start"}>
+          <Text>{initData?.first_name + " " + initData?.last_name}</Text>
+          <Text>{initData?.email}</Text>
+        </Stack>
       </MenuTrigger>
       <MenuContent spaceY={1} minW={"150px"}>
+        <ChangePassword
+          trigger={
+            <MenuItem
+              value="change-password"
+              cursor={"pointer"}
+              borderRadius={5}
+            >
+              <Gear size={20} />
+              Change Password
+            </MenuItem>
+          }
+        />
         <MenuItem
           cursor={"pointer"}
           color="fg.error"

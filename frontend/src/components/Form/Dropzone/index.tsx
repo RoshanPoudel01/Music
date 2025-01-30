@@ -88,7 +88,7 @@ const ReactDropzone: FC<DropzoneProps & FieldProps & FlexProps> = ({
   boxAspectRatio,
   ...rest
 }) => {
-  const { accept, maxSize } = options;
+  const { maxSize } = options;
 
   const [acceptedFileList, setAcceptedFileList] = useState<Blob[]>([]);
   // const [rejectedFileList, setRejectedFileList] = useState<FileRejection[]>([]);
@@ -108,7 +108,6 @@ const ReactDropzone: FC<DropzoneProps & FieldProps & FlexProps> = ({
         },
       ]);
     }
-    1;
   }, [file]);
 
   return (
@@ -136,7 +135,6 @@ const ReactDropzone: FC<DropzoneProps & FieldProps & FlexProps> = ({
           } else {
             setFileError(undefined);
           }
-
           acceptedFiles.forEach((file) => {
             const filePreview = {
               url: URL.createObjectURL(file),
@@ -206,7 +204,11 @@ const ReactDropzone: FC<DropzoneProps & FieldProps & FlexProps> = ({
                       ? undefined
                       : convert(10, "MB").to("bytes")
                 }
-                accept={accept ?? { "*/*": [".*"] }}
+                accept={{
+                  "application/vnd.ms-excel": [],
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                    [],
+                }}
                 multiple={!!isMultiple}
               >
                 {({ getRootProps, getInputProps }) => (

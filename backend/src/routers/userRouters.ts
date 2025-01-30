@@ -11,6 +11,6 @@ router.get("/:id", verifyToken, UserController.getUserById);
 router.delete("/delete/:id", verifyToken, UserController.deleteUser);
 router.post("/login", UserController.loginUser);
 
-router.get("/init", UserController.userData);
+router.post("/change-password", verifyToken, UserController.changePassword);
 
 export default router;

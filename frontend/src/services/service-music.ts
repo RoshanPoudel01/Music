@@ -3,14 +3,10 @@ import { useFetch, useMutate } from "./service-form-methods";
 import { IPageParams, RootInterface, SingleResponse } from "./service-response";
 export interface MusicResponse {
   id: number;
-  name: string;
-  dob?: string;
-  gender: string;
-  address: string;
-  first_release_year: number;
-  no_of_albums_released: number;
-  created_at: string;
-  updated_at: string;
+  title: string;
+  album_name: string;
+  genre: string;
+  artist_name: string;
 }
 const useFetchMusics = (pageParams: IPageParams) => {
   return useFetch<RootInterface<MusicResponse[]>>({

@@ -18,10 +18,26 @@ const schema = yup.object().shape({
   first_name: yup.string().required("First Name is required"),
   last_name: yup.string().required("Last Name is required"),
   email: yup.string().email().required("Email is required"),
-  password: yup.string().required("Password is required"),
-  confirm_password: yup
+  password: yup
     .string()
-    .oneOf([yup.ref("password"), undefined], "Passwords must match"),
+    .required("Password is required")
+    .test(
+      "password-length",
+      "Password must be at least 6 characters",
+      function (value) {
+        // Only check length if password is provided
+        if (value) {
+          return value.length >= 6;
+        }
+        return true;
+      }
+    ),
+  confirm_password: yup.string().when("password", {
+    is: (password) => !!password,
+    then: (schema) =>
+      schema.oneOf([yup.ref("password")], "Passwords must match"),
+    otherwise: (schema) => schema,
+  }),
   phone: yup.string().required("Phone is required"),
   address: yup.string().required("Address is required"),
   dob: yup.string().required("Date of Birth is required"),

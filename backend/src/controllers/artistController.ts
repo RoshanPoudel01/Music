@@ -352,7 +352,7 @@ const bulkUploadArtists = async (req: Request, res: Response) => {
     } else {
       return APIResponse({
         res,
-        statusCode: 207,
+        statusCode: 400,
         status: 0,
         message: "Some artists failed to upload",
         data: null,

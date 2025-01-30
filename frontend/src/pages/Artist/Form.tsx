@@ -90,6 +90,10 @@ const ArtistForm: FC<IArtistForm> = ({ trigger, rowId }) => {
       isSubmitting={isPending}
       rowId={rowId}
       isFetching={isLoading}
+      onClose={() => {
+        setOpen(false);
+        reset(defaultValues);
+      }}
     >
       <Stack>
         <TextInput control={control} name="name" label="Name" />

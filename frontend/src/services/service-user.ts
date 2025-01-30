@@ -50,4 +50,16 @@ const useDeleteUser = () => {
   });
 };
 
-export { useDeleteUser, useFetchUser, useFetchUsers, useRegisterUser };
+const useChangePassword = () => {
+  return useMutate({
+    url: api.users.changePassword,
+    message: "Password changed successfully",
+  });
+};
+export {
+  useChangePassword,
+  useDeleteUser,
+  useFetchUser,
+  useFetchUsers,
+  useRegisterUser,
+};

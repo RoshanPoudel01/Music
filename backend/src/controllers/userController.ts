@@ -61,6 +61,21 @@ const createUserSchema = Joi.object({
   id: Joi.number().optional(), // Only present for updates
 });
 
+const passwordChangeSchema = Joi.object({
+  id: Joi.number().required().messages({
+    "number.base": "Invalid user ID.",
+    "any.required": "User ID is required.",
+  }),
+  oldPassword: Joi.string().required().messages({
+    "string.empty": "Old password is required.",
+    "any.required": "Old password is required.",
+  }),
+  newPassword: Joi.string().min(6).required().messages({
+    "string.min": "Password must be at least 6 characters.",
+    "string.empty": "New password is required.",
+    "any.required": "New password is required.",
+  }),
+});
 export const validate = (
   schema: Joi.ObjectSchema,
   data: any,
@@ -337,24 +352,73 @@ const deleteUser = async (req: Request, res: Response) => {
   );
 };
 
-const userData = async (req: Request, res: Response) => {
-  // const query = `Select * from users where id = $1`;
-  // const { rows } = await db.query(query);
-  // if (rows.length) {
-  return APIResponse({
-    res,
-    statusCode: 200,
-    status: 1,
-    message: "Data retrieved successfully",
-  });
-  // } else {
-  //   return APIResponse({
-  //     res,
-  //     statusCode: 404,
-  //     status: 0,
-  //     message: "No data found",
-  //   });
-  // }
+const changePassword = async (req: Request, res: Response) => {
+  const { id, oldPassword, newPassword } = req.body;
+  const validationErrors = validate(passwordChangeSchema, req.body, false);
+  if (validationErrors) {
+    return APIResponse({
+      res,
+      statusCode: 400,
+      status: 0,
+      message: "Validation failed.",
+      error: validationErrors,
+    });
+  }
+
+  try {
+    // Check if the user exists
+    const query = `SELECT * FROM users WHERE id = $1`;
+    const { rows } = await db.query(query, [id]);
+
+    if (!rows.length) {
+      return APIResponse({
+        res,
+        statusCode: 404,
+        status: 0,
+        message: "User not found",
+      });
+    }
+
+    const user = rows[0];
+
+    // Compare passwords
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
+      return APIResponse({
+        res,
+        statusCode: 401,
+        status: 0,
+        message: "Invalid old password",
+      });
+    }
+
+    // Update password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const updateQuery = `UPDATE users SET password = $1 WHERE id = $2 RETURNING *`;
+    const { rows: updateRows } = await db.query(updateQuery, [
+      hashedPassword,
+      id,
+    ]);
+
+    // Exclude password before sending the response
+    const { password: _, ...userWithoutPassword } = updateRows[0];
+
+    return APIResponse({
+      res,
+      statusCode: 200,
+      status: 1,
+      data: userWithoutPassword,
+      message: "Password updated successfully",
+    });
+  } catch (err) {
+    return APIResponse({
+      res,
+      statusCode: 500,
+      status: 0,
+      message: "An error occurred during password update",
+      error: (err as Error).message,
+    });
+  }
 };
 export const UserController = {
   createUser,
@@ -362,5 +426,5 @@ export const UserController = {
   getUserById,
   deleteUser,
   loginUser,
-  userData,
+  changePassword,
 };

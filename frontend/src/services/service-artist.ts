@@ -45,4 +45,17 @@ const useDeleteArtist = () => {
   });
 };
 
-export { useAddArtist, useDeleteArtist, useFetchArtist, useFetchArtists };
+const useUploadArtist = () => {
+  return useMutate({
+    url: api.artists.bulkUpload,
+    invalidates: ["artists"],
+    message: "Artist uploaded successfully",
+  });
+};
+export {
+  useAddArtist,
+  useDeleteArtist,
+  useFetchArtist,
+  useFetchArtists,
+  useUploadArtist,
+};

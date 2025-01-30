@@ -10,11 +10,18 @@ import { IPageParams, IRow } from "@artist/services/service-response";
 import { ExportCSV } from "@artist/utils/Export";
 import PageHeader from "@artist/utils/PageHeader";
 import { Button, HStack, Icon, IconButton, Stack } from "@chakra-ui/react";
-import { Eye, Pencil } from "@phosphor-icons/react";
+import {
+  DownloadSimple,
+  Eye,
+  Pencil,
+  Plus,
+  UploadSimple,
+} from "@phosphor-icons/react";
 import moment from "moment";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NAVIGATION_ROUTES } from "../App/navigationRoutes";
+import BulkUpload from "./BulkUpload";
 import ArtistForm from "./Form";
 const Artist = () => {
   const [pageParams, setPageParams] = useState<IPageParams>({
@@ -80,7 +87,10 @@ const Artist = () => {
               variant={"subtle"}
               colorPalette={"teal"}
               onClick={() =>
-                navigate(NAVIGATION_ROUTES.ARTISTS + `/${id}/music`)
+                navigate(
+                  NAVIGATION_ROUTES.ARTISTS +
+                    `/${id}/music?name=${row.original.name}`
+                )
               }
             >
               <Icon boxSize={6} asChild>
@@ -177,14 +187,25 @@ const Artist = () => {
           <HStack justify={"space-between"}>
             <SearchInput onSearch={setSearchText} />
             <HStack>
+              <BulkUpload
+                trigger={
+                  <Button w={"max-content"}>
+                    <UploadSimple size={32} />
+                    Bulk Upload
+                  </Button>
+                }
+              />
+
               <Button w={"max-content"} onClick={handleExport}>
-                Import
-              </Button>
-              <Button w={"max-content"} onClick={handleExport}>
-                Export
+                <DownloadSimple size={32} /> Export
               </Button>
               <ArtistForm
-                trigger={<Button w={"max-content"}>Add Artist</Button>}
+                trigger={
+                  <Button w={"max-content"}>
+                    <Plus size={32} />
+                    Add Artist
+                  </Button>
+                }
               />
             </HStack>
           </HStack>

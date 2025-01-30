@@ -19,6 +19,7 @@ const users = {
   index: "/users",
   byId: "/users/:id",
   delete: "/users/delete/:id",
+  changePassword: "/users/change-password",
 };
 
 const artists = {
@@ -27,6 +28,7 @@ const artists = {
   create: "/artist/create-artist",
   delete: "/artist/delete/:id",
   update: "/artist/update/:id",
+  bulkUpload: "/artist/upload",
 };
 const music = {
   index: "music/allMusic",
@@ -34,10 +36,14 @@ const music = {
   create: "/music/create-music",
   delete: "/music/delete/:id",
 };
+const dashboard = {
+  index: "/dashboard",
+};
 
 export const api = {
   auth,
   users,
   artists,
   music,
+  dashboard,
 };
