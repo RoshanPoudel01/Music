@@ -83,7 +83,6 @@ const ReactDropzone: FC<DropzoneProps & FieldProps & FlexProps> = ({
   noMaxSize,
   backendError,
   boxWidth,
-  boxHeight,
   options,
   boxAspectRatio,
   ...rest
@@ -216,8 +215,7 @@ const ReactDropzone: FC<DropzoneProps & FieldProps & FlexProps> = ({
                     flexDir="column"
                     {...getRootProps()}
                     w={"full"}
-                    maxW={boxWidth ?? "150px"}
-                    aspectRatio={boxAspectRatio ?? 1}
+                    aspectRatio={5}
                     border={"2px dashed rgba(200, 204, 209, 0.70)"}
                     bg={"gray.50"}
                     _hover={{ bg: "gray.100" }}
@@ -257,6 +255,7 @@ const ReactDropzone: FC<DropzoneProps & FieldProps & FlexProps> = ({
                         url={preview[0].url}
                         fileName={preview[0].fileName ?? ""}
                         aspectRatio={boxAspectRatio ?? 1}
+                        isFile={true}
                         onDelete={() => {
                           setPreview([]); // Clear the preview
                           setAcceptedFileList([]); // Clear the accepted files list

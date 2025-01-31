@@ -7,7 +7,17 @@ import moment from "moment";
 import React, { FC, ReactNode, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-const defaultValues = {
+const defaultValues: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password?: string;
+  confirm_password?: string;
+  phone: string;
+  address: string;
+  dob: string;
+  gender: string;
+} = {
   first_name: "",
   last_name: "",
   email: "",
@@ -18,8 +28,6 @@ const defaultValues = {
   dob: "",
   gender: "",
 };
-
-type FormValues = yup.InferType<typeof schema>;
 
 interface IUserForm {
   trigger: ReactNode;
@@ -54,7 +62,7 @@ const UserForm: FC<IUserForm> = ({ trigger, rowId }) => {
         }
       ),
     confirm_password: yup.string().when("password", {
-      is: (password) => !!password,
+      is: (password: string) => !!password,
       then: (schema) =>
         schema.oneOf([yup.ref("password")], "Passwords must match"),
       otherwise: (schema) => schema,
@@ -83,7 +91,7 @@ const UserForm: FC<IUserForm> = ({ trigger, rowId }) => {
     }
   }, [user, reset]);
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: typeof defaultValues) => {
     try {
       if (rowId) {
         await addUser({
@@ -109,7 +117,7 @@ const UserForm: FC<IUserForm> = ({ trigger, rowId }) => {
       onOpenChange={(e) => {
         setOpen(e.open);
       }}
-      title="Add User"
+      heading="Add User"
       isSubmitting={isPending}
       rowId={rowId}
       isFetching={isLoading}

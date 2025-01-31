@@ -12,7 +12,7 @@ import PageHeader from "@artist/utils/PageHeader";
 import { Heading, HStack, Icon, IconButton, Stack } from "@chakra-ui/react";
 import { Pencil, Plus } from "@phosphor-icons/react";
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import MusicForm from "./Form";
 const Music = () => {
   const [pageParams, setPageParams] = useState<IPageParams>({
@@ -20,8 +20,12 @@ const Music = () => {
     pageSize: 10,
   });
   const [searchText, setSearchText] = useState<string>("");
-  const { data: musicData, isLoading: isMusicGetLoading } =
-    useFetchMusics(pageParams);
+  const { id } = useParams<{ id: string }>();
+
+  const { data: musicData, isLoading: isMusicGetLoading } = useFetchMusics({
+    pageParams,
+    id: Number(id),
+  });
 
   const [searchParams] = useSearchParams();
   const artistName = searchParams.get("name");

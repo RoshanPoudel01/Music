@@ -15,11 +15,14 @@ interface IMusicFormProps {
 }
 
 const MusicForm: FC<IMusicFormProps> = ({ trigger, rowId }) => {
-  const defaultValues = {
-    artist_id: "",
+  const defaultValues: {
+    title: string;
+    album_name: string;
+    genre: ISelectOptions<string> | null;
+  } = {
     title: "",
     album_name: "",
-    genre: null as ISelectOptions<string> | null,
+    genre: null,
   };
 
   const { id } = useParams<{ id: string }>();
@@ -90,7 +93,7 @@ const MusicForm: FC<IMusicFormProps> = ({ trigger, rowId }) => {
 
   return (
     <ModalForm
-      title="Add Music"
+      heading="Add Music"
       trigger={trigger}
       open={open}
       onOpenChange={(e) => {

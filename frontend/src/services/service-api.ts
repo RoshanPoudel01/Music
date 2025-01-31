@@ -31,7 +31,7 @@ const artists = {
   bulkUpload: "/artist/upload",
 };
 const music = {
-  index: "music/allMusic",
+  index: "music/allMusic?artist_id=:id",
   byId: "/music/:id",
   create: "/music/create-music",
   delete: "/music/delete/:id",

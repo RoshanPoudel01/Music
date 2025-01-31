@@ -1,5 +1,6 @@
 // SingleFilePreview.tsx
 
+import { imageAssets } from "@artist/assets/images";
 import LazyLoadImage from "@artist/components/Image";
 import { ConditionalValue, Flex, Icon, IconButton } from "@chakra-ui/react";
 import { Trash } from "@phosphor-icons/react";
@@ -10,43 +11,43 @@ interface SingleFilePreviewProps {
   fileName: string;
   onDelete: () => void;
   aspectRatio?: ConditionalValue<string | number>;
+  isFile?: boolean;
 }
 
 const SingleFilePreview: React.FC<SingleFilePreviewProps> = ({
   url,
-  // fileName,
   onDelete,
   aspectRatio,
+  isFile,
 }) => {
   return (
     <Flex gap={2} flexDir="column" position="relative" overflow={"hidden"}>
-      <LazyLoadImage
-        w={"full"}
-        objectFit="cover"
-        objectPosition={"center"}
-        border={"1px solid"}
-        borderColor={"gray.500"}
-        borderRadius={"5px"}
-        overflow={"hidden"}
-        src={url}
-        aspectRatio={aspectRatio ?? 1}
-      />
-      {/* <Text
-        pos={"absolute"}
-        bottom={0}
-        left={0}
-        right={0}
-        bg={"white"}
-        opacity={0.9}
-        color={"black"}
-        fontSize={{ base: "xs", sm: "sm" }}
-        p={2}
-        overflow={"hidden"}
-        whiteSpace={"nowrap"} // Prevent text wrapping
-        textOverflow={"ellipsis"} // Truncate text with ellipsis
-      >
-        {fileName}
-      </Text> */}
+      {isFile ? (
+        <LazyLoadImage
+          w={"full"}
+          height={"150px"}
+          objectFit="cover"
+          objectPosition={"center"}
+          border={"1px solid"}
+          borderColor={"gray.500"}
+          borderRadius={"5px"}
+          overflow={"hidden"}
+          src={imageAssets.File}
+          aspectRatio={aspectRatio ?? 5}
+        />
+      ) : (
+        <LazyLoadImage
+          w={"full"}
+          objectFit="cover"
+          objectPosition={"center"}
+          border={"1px solid"}
+          borderColor={"gray.500"}
+          borderRadius={"5px"}
+          overflow={"hidden"}
+          src={url}
+          aspectRatio={aspectRatio ?? 1}
+        />
+      )}
 
       <IconButton
         alignSelf={"center"}

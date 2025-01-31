@@ -8,10 +8,16 @@ export interface MusicResponse {
   genre: string;
   artist_name: string;
 }
-const useFetchMusics = (pageParams: IPageParams) => {
+const useFetchMusics = ({
+  pageParams,
+  id,
+}: {
+  pageParams: IPageParams;
+  id: number;
+}) => {
   return useFetch<RootInterface<MusicResponse[]>>({
-    url: api.music.index,
-    queryKey: ["music", pageParams],
+    url: api.music.index?.replace(":id", id + ""),
+    queryKey: ["music", pageParams, id],
     pageParams,
   });
 };

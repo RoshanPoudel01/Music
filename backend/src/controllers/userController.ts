@@ -340,6 +340,14 @@ const getUserById = async (req: Request, res: Response) => {
 
 const deleteUser = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
+  if (id == Number(req?.userId)) {
+    return APIResponse({
+      res,
+      statusCode: 400,
+      status: 0,
+      message: "You cannot delete yourself",
+    });
+  }
   const query = `DELETE FROM users WHERE id = $1 RETURNING *`;
 
   return executeQuery(

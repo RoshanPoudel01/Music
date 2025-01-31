@@ -27,7 +27,7 @@ const schema = yup.object().shape({
       }
     ),
   confirm_password: yup.string().when("password", {
-    is: (password) => !!password,
+    is: (password: string) => !!password,
     then: (schema) =>
       schema.oneOf([yup.ref("password")], "Passwords must match"),
     otherwise: (schema) => schema,

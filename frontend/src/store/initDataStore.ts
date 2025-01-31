@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface IInitData {
   id: number;
@@ -16,7 +17,14 @@ interface IInitDataStore {
   setInitData: (initData: IInitData) => void;
 }
 
-export const useInitDataStore = create<IInitDataStore>((set) => ({
-  initData: undefined,
-  setInitData: (initData) => set((state) => ({ ...state, initData })),
-}));
+export const useInitDataStore = create<IInitDataStore>(
+  persist(
+    (set) => ({
+      initData: undefined,
+      setInitData: (initData) => set((state) => ({ ...state, initData })),
+    }),
+    {
+      name: "initData",
+    }
+  )
+);

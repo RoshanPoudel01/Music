@@ -7,6 +7,7 @@ import {
   useFetchUsers,
   UserResponse,
 } from "@artist/services/service-user";
+import { useInitDataStore } from "@artist/store";
 import PageHeader from "@artist/utils/PageHeader";
 import { Button, HStack, Icon, IconButton, Stack } from "@chakra-ui/react";
 import { Pencil, Plus } from "@phosphor-icons/react";
@@ -18,6 +19,7 @@ const Users = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+  const { initData } = useInitDataStore();
   const [searchText, setSearchText] = useState<string>("");
 
   const { data: usersData, isLoading: isUserGetLoading } =
@@ -76,18 +78,21 @@ const Users = () => {
                 </IconButton>
               }
             />
-            <DeleteAlert
-              isDeleteLoading={isPending}
-              heading="Delete User"
-              description="Are you sure you want to delete this user?"
-              onConfirm={async () => {
-                try {
-                  await deleteUser({ id });
-                } catch (error) {
-                  console.error(error);
-                }
-              }}
-            />
+            {/* Cannot delete logged in user */}
+            {id != initData?.id && (
+              <DeleteAlert
+                isDeleteLoading={isPending}
+                heading="Delete User"
+                description="Are you sure you want to delete this user?"
+                onConfirm={async () => {
+                  try {
+                    await deleteUser({ id });
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }}
+              />
+            )}
           </HStack>
         );
       },
