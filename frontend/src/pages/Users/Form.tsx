@@ -92,6 +92,7 @@ const UserForm: FC<IUserForm> = ({ trigger, rowId }) => {
   }, [user, reset]);
 
   const onSubmit = async (data: typeof defaultValues) => {
+    const { confirm_password, ...rest } = data;
     try {
       if (rowId) {
         await addUser({
@@ -101,7 +102,7 @@ const UserForm: FC<IUserForm> = ({ trigger, rowId }) => {
           },
         });
       } else {
-        await addUser({ data: data });
+        await addUser({ data: { ...rest } });
       }
       reset(defaultValues);
       setOpen(false);

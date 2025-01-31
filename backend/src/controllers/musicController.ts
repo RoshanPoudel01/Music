@@ -135,7 +135,7 @@ const getAllMusic = async (req: Request, res: Response) => {
     values.push(artist_id);
   }
 
-  query += ` ORDER BY m.id OFFSET $${values.length + 1} LIMIT $${
+  query += ` ORDER BY m.id DESC OFFSET $${values.length + 1} LIMIT $${
     values.length + 2
   }`;
   values.push(offset, limit);

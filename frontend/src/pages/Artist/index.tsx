@@ -1,6 +1,7 @@
 import { DataTable } from "@artist/components/DataTable";
 import { SearchInput } from "@artist/components/Form";
 import { DeleteAlert } from "@artist/components/Form/Modal";
+import { Tooltip } from "@artist/components/ui/tooltip";
 import {
   ArtistResponse,
   useDeleteArtist,
@@ -82,35 +83,53 @@ const Artist = () => {
 
         return (
           <HStack>
-            <IconButton
-              size={"sm"}
-              variant={"subtle"}
-              colorPalette={"teal"}
-              onClick={() =>
-                navigate(
-                  NAVIGATION_ROUTES.ARTISTS +
-                    `/${id}/music?name=${row.original.name}`
-                )
-              }
+            <Tooltip
+              content="View Artist Music"
+              closeDelay={100}
+              positioning={{
+                placement: "top",
+              }}
             >
-              <Icon boxSize={6} asChild>
-                <Eye />
-              </Icon>
-            </IconButton>
+              <IconButton
+                size={"sm"}
+                variant={"subtle"}
+                colorPalette={"teal"}
+                onClick={() =>
+                  navigate(
+                    NAVIGATION_ROUTES.ARTISTS +
+                      `/${id}/music?name=${row.original.name}`
+                  )
+                }
+              >
+                <Icon boxSize={6} asChild>
+                  <Eye />
+                </Icon>
+              </IconButton>
+            </Tooltip>
+
             <ArtistForm
               rowId={id}
               trigger={
-                <IconButton
-                  size={"sm"}
-                  variant={"subtle"}
-                  colorPalette={"blue"}
+                <Tooltip
+                  content="Edit Artist"
+                  positioning={{
+                    placement: "top",
+                  }}
+                  closeDelay={100}
                 >
-                  <Icon boxSize={6} asChild>
-                    <Pencil />
-                  </Icon>
-                </IconButton>
+                  <IconButton
+                    size={"sm"}
+                    variant={"subtle"}
+                    colorPalette={"blue"}
+                  >
+                    <Icon boxSize={6} asChild>
+                      <Pencil />
+                    </Icon>
+                  </IconButton>
+                </Tooltip>
               }
             />
+
             <DeleteAlert
               isDeleteLoading={isPending}
               heading="Delete Artist"

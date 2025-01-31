@@ -5,7 +5,6 @@ export const ExportCSV = ({ csvData, fileName, Heading, header }: any) => {
   const wscols = header.map(() => {
     return { wch: 30 };
   });
-
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
@@ -22,7 +21,7 @@ export const ExportCSV = ({ csvData, fileName, Heading, header }: any) => {
         return obj;
       }, {})
     );
-
+    console.log(filteredData);
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(Heading, {
       header,
       skipHeader: true,

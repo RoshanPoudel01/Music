@@ -137,7 +137,7 @@ const getAllArtists = async (req: Request, res: Response) => {
   const offset = pageNumber * Number(limit);
 
   const dataCountQuery = `SELECT COUNT(*) FROM artists`;
-  const query = `SELECT * FROM artists ORDER BY id OFFSET $1 LIMIT $2`;
+  const query = `SELECT * FROM artists ORDER BY id DESC OFFSET $1 LIMIT $2`;
   try {
     const { rows: dataCountRows } = await db.query(dataCountQuery);
     const { rows } = await db.query(query, [offset, limit]);

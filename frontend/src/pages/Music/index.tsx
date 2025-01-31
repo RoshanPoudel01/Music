@@ -2,6 +2,7 @@ import { DataTable } from "@artist/components/DataTable";
 import { SearchInput } from "@artist/components/Form";
 import { DeleteAlert } from "@artist/components/Form/Modal";
 import { Button } from "@artist/components/ui/button";
+import { Tooltip } from "@artist/components/ui/tooltip";
 import {
   MusicResponse,
   useDeleteMusic,
@@ -60,17 +61,25 @@ const Music = () => {
             <MusicForm
               rowId={id}
               trigger={
-                <IconButton
-                  size={"sm"}
-                  variant={"subtle"}
-                  colorPalette={"blue"}
+                <Tooltip
+                  content="Edit Music"
+                  positioning={{
+                    placement: "top",
+                  }}
                 >
-                  <Icon boxSize={6} asChild>
-                    <Pencil />
-                  </Icon>
-                </IconButton>
+                  <IconButton
+                    size={"sm"}
+                    variant={"subtle"}
+                    colorPalette={"blue"}
+                  >
+                    <Icon boxSize={6} asChild>
+                      <Pencil />
+                    </Icon>
+                  </IconButton>
+                </Tooltip>
               }
             />
+
             <DeleteAlert
               isDeleteLoading={isDeleting}
               heading="Delete Artist"

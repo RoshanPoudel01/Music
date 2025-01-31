@@ -301,7 +301,7 @@ const getAllUsers = async (req: Request, res: Response) => {
   const offset = pageNumber * Number(limit);
 
   const dataCountQuery = `SELECT COUNT(*) FROM users`;
-  const query = `SELECT * FROM users ORDER BY id OFFSET $1 LIMIT $2`;
+  const query = `SELECT * FROM users ORDER BY id DESC OFFSET $1 LIMIT $2`;
   try {
     const { rows: dataCountRows } = await db.query(dataCountQuery);
     const { rows } = await db.query(query, [offset, limit]);

@@ -1,6 +1,7 @@
 import { DataTable } from "@artist/components/DataTable";
 import { SearchInput } from "@artist/components/Form";
 import { DeleteAlert } from "@artist/components/Form/Modal";
+import { Tooltip } from "@artist/components/ui/tooltip";
 import { IPageParams, IRow } from "@artist/services/service-response";
 import {
   useDeleteUser,
@@ -67,15 +68,23 @@ const Users = () => {
             <UserForm
               rowId={id}
               trigger={
-                <IconButton
-                  size={"sm"}
-                  variant={"subtle"}
-                  colorPalette={"blue"}
+                <Tooltip
+                  content="Edit User"
+                  closeDelay={100}
+                  positioning={{
+                    placement: "top",
+                  }}
                 >
-                  <Icon boxSize={6} asChild>
-                    <Pencil />
-                  </Icon>
-                </IconButton>
+                  <IconButton
+                    size={"sm"}
+                    variant={"subtle"}
+                    colorPalette={"blue"}
+                  >
+                    <Icon boxSize={6} asChild>
+                      <Pencil />
+                    </Icon>
+                  </IconButton>
+                </Tooltip>
               }
             />
             {/* Cannot delete logged in user */}
