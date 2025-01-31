@@ -21,7 +21,6 @@ export const ExportCSV = ({ csvData, fileName, Heading, header }: any) => {
         return obj;
       }, {})
     );
-    console.log(filteredData);
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(Heading, {
       header,
       skipHeader: true,
