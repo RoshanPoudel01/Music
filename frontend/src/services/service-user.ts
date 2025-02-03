@@ -25,11 +25,18 @@ const useRegisterUser = () => {
   });
 };
 
-const useFetchUsers = (pageParams: IPageParams) => {
+const useFetchUsers = ({
+  pageParams,
+  searchParam,
+}: {
+  pageParams: IPageParams;
+  searchParam: string;
+}) => {
   return useFetch<RootInterface<UserResponse[]>>({
     url: api.users.index,
-    queryKey: ["users"],
+    queryKey: ["users", pageParams, searchParam],
     pageParams,
+    searchParam,
   });
 };
 

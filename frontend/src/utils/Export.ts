@@ -1,6 +1,7 @@
 import FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 
+//helper function for exporting data to excel
 export const ExportCSV = ({ csvData, fileName, Heading, header }: any) => {
   const wscols = header.map(() => {
     return { wch: 30 };

@@ -132,15 +132,23 @@ const createArtist = async (req: Request, res: Response) => {
 };
 
 const getAllArtists = async (req: Request, res: Response) => {
-  const { page = 0, limit = 10 } = req.query;
+  const { page = 0, limit = 10, searchParam = "" } = req.query;
   const pageNumber = Number(page);
   const offset = pageNumber * Number(limit);
 
-  const dataCountQuery = `SELECT COUNT(*) FROM artists`;
-  const query = `SELECT * FROM artists ORDER BY id DESC OFFSET $1 LIMIT $2`;
+  const searchWithWildcards = `%${searchParam}%`;
+  const dataCountQuery = `SELECT COUNT(*) FROM artists WHERE name ILIKE $1`;
+
+  const query = `SELECT * FROM artists WHERE name ILIKE $3 ORDER BY id DESC OFFSET $1 LIMIT $2`;
   try {
-    const { rows: dataCountRows } = await db.query(dataCountQuery);
-    const { rows } = await db.query(query, [offset, limit]);
+    const { rows: dataCountRows } = await db.query(dataCountQuery, [
+      searchWithWildcards,
+    ]);
+    const { rows } = await db.query(query, [
+      offset,
+      limit,
+      searchWithWildcards,
+    ]);
     return APIResponse({
       res,
       statusCode: 200,

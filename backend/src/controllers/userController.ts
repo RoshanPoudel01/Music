@@ -296,15 +296,28 @@ const loginUser = async (req: Request, res: Response) => {
 };
 
 const getAllUsers = async (req: Request, res: Response) => {
-  const { page = 0, limit = 10 } = req.query;
+  const { page = 0, limit = 10, searchParam = "" } = req.query;
   const pageNumber = Number(page);
   const offset = pageNumber * Number(limit);
 
-  const dataCountQuery = `SELECT COUNT(*) FROM users`;
-  const query = `SELECT * FROM users ORDER BY id DESC OFFSET $1 LIMIT $2`;
+  const searchWithWildcards = `%${searchParam}%`;
+  const dataCountQuery = `SELECT COUNT(*) FROM users WHERE first_name ILIKE $1 OR last_name ILIKE $1`;
+  const query = `
+  SELECT * 
+  FROM users
+  WHERE first_name ILIKE $3 OR last_name ILIKE $3
+  ORDER BY id DESC
+  OFFSET $1 LIMIT $2
+`;
   try {
-    const { rows: dataCountRows } = await db.query(dataCountQuery);
-    const { rows } = await db.query(query, [offset, limit]);
+    const { rows: dataCountRows } = await db.query(dataCountQuery, [
+      searchWithWildcards,
+    ]);
+    const { rows } = await db.query(query, [
+      offset,
+      limit,
+      searchWithWildcards,
+    ]);
     const data = excludeSensitiveFields(rows);
     return APIResponse({
       res,

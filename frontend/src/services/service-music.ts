@@ -11,14 +11,17 @@ export interface MusicResponse {
 const useFetchMusics = ({
   pageParams,
   id,
+  searchParam,
 }: {
   pageParams: IPageParams;
   id: number;
+  searchParam: string;
 }) => {
   return useFetch<RootInterface<MusicResponse[]>>({
     url: api.music.index?.replace(":id", id + ""),
-    queryKey: ["music", pageParams, id],
+    queryKey: ["music", pageParams, id, searchParam],
     pageParams,
+    searchParam,
   });
 };
 

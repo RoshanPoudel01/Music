@@ -36,7 +36,10 @@ const Artist = () => {
     data: artistData,
     isLoading: isArtistGetLoading,
     refetch,
-  } = useFetchArtists(pageParams);
+  } = useFetchArtists({
+    pageParams,
+    searchParam: searchText,
+  });
   const columns = [
     {
       header: "S.N",
@@ -110,23 +113,15 @@ const Artist = () => {
             <ArtistForm
               rowId={id}
               trigger={
-                <Tooltip
-                  content="Edit Artist"
-                  positioning={{
-                    placement: "top",
-                  }}
-                  closeDelay={100}
+                <IconButton
+                  size={"sm"}
+                  variant={"subtle"}
+                  colorPalette={"blue"}
                 >
-                  <IconButton
-                    size={"sm"}
-                    variant={"subtle"}
-                    colorPalette={"blue"}
-                  >
-                    <Icon boxSize={6} asChild>
-                      <Pencil />
-                    </Icon>
-                  </IconButton>
-                </Tooltip>
+                  <Icon boxSize={6} asChild>
+                    <Pencil />
+                  </Icon>
+                </IconButton>
               }
             />
 
@@ -198,10 +193,10 @@ const Artist = () => {
             pageParams: pageParams,
             onChangePagination: setPageParams,
           }}
-          filter={{
-            globalFilter: searchText,
-            setGlobalFilter: setSearchText,
-          }}
+          // filter={{
+          //   globalFilter: searchText,
+          //   setGlobalFilter: setSearchText,
+          // }}
         >
           <HStack justify={"space-between"}>
             <SearchInput onSearch={setSearchText} />

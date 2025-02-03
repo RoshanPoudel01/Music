@@ -117,33 +117,39 @@ const createMusic = async (req: Request, res: Response) => {
 };
 
 const getAllMusic = async (req: Request, res: Response) => {
-  const { page = 0, limit = 10, artist_id } = req.query;
+  const { page = 0, limit = 10, artist_id, searchParam = "" } = req.query;
   const pageNumber = Number(page);
   const offset = pageNumber * Number(limit);
 
+  // Prepare search parameter with wildcards for partial matching
+  const searchWithWildcards = `%${searchParam}%`;
+
   let query = `
-      SELECT m.*, a.name as artist_name 
-      FROM music m 
-      LEFT JOIN artists a ON m.artist_id = a.id`;
+    SELECT m.*, a.name AS artist_name
+    FROM music m
+    LEFT JOIN artists a ON m.artist_id = a.id
+    WHERE m.title ILIKE $4`;
 
-  const values: any[] = [];
-  let countQuery = `SELECT COUNT(*) FROM music`;
+  const values = [];
+  let countQuery = `SELECT COUNT(*) FROM music WHERE title ILIKE $2`;
 
+  // If artist_id is provided, add the filter for artist_id
   if (artist_id) {
-    query += ` WHERE m.artist_id = $1`;
-    countQuery += ` WHERE artist_id = $1`;
+    query += ` AND m.artist_id = $1`;
+    countQuery += ` AND artist_id = $1`;
     values.push(artist_id);
   }
 
+  // Add search param and pagination (offset and limit)
   query += ` ORDER BY m.id DESC OFFSET $${values.length + 1} LIMIT $${
     values.length + 2
   }`;
-  values.push(offset, limit);
+  values.push(offset, limit, searchWithWildcards);
 
   try {
     const { rows: dataCountRows } = await db.query(
       countQuery,
-      artist_id ? [artist_id] : []
+      artist_id ? [artist_id, searchWithWildcards] : []
     );
     const { rows } = await db.query(query, values);
     return APIResponse({

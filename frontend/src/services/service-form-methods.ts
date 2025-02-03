@@ -19,6 +19,7 @@ interface IQueryProps {
   queryKey?: QueryKey;
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   pageParams?: IPageParams;
+  searchParam?: string;
 }
 
 export interface IData<T> {
@@ -28,12 +29,19 @@ export interface IData<T> {
 
 //getMethod
 
-const useFetch = <T>({ url, enabled, queryKey, pageParams }: IQueryProps) => {
+const useFetch = <T>({
+  url,
+  enabled,
+  queryKey,
+  pageParams,
+  searchParam,
+}: IQueryProps) => {
   const fetchData = (): Promise<AxiosResponse<T>> => {
     return artistHttpClient.get(url, {
       params: {
         page: pageParams?.pageIndex,
         limit: pageParams?.pageSize,
+        searchParam,
       },
     });
   };
@@ -46,6 +54,7 @@ const useFetch = <T>({ url, enabled, queryKey, pageParams }: IQueryProps) => {
   });
 };
 
+//postMethod
 const useMutate = <T>({
   url,
   invalidates,

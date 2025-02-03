@@ -1,7 +1,6 @@
 import { DataTable } from "@artist/components/DataTable";
 import { SearchInput } from "@artist/components/Form";
 import { DeleteAlert } from "@artist/components/Form/Modal";
-import { Tooltip } from "@artist/components/ui/tooltip";
 import { IPageParams, IRow } from "@artist/services/service-response";
 import {
   useDeleteUser,
@@ -23,8 +22,10 @@ const Users = () => {
   const { initData } = useInitDataStore();
   const [searchText, setSearchText] = useState<string>("");
 
-  const { data: usersData, isLoading: isUserGetLoading } =
-    useFetchUsers(pageParams);
+  const { data: usersData, isLoading: isUserGetLoading } = useFetchUsers({
+    pageParams,
+    searchParam: searchText,
+  });
   const { mutateAsync: deleteUser, isPending } = useDeleteUser();
 
   const columns = [
@@ -68,23 +69,15 @@ const Users = () => {
             <UserForm
               rowId={id}
               trigger={
-                <Tooltip
-                  content="Edit User"
-                  closeDelay={100}
-                  positioning={{
-                    placement: "top",
-                  }}
+                <IconButton
+                  size={"sm"}
+                  variant={"subtle"}
+                  colorPalette={"blue"}
                 >
-                  <IconButton
-                    size={"sm"}
-                    variant={"subtle"}
-                    colorPalette={"blue"}
-                  >
-                    <Icon boxSize={6} asChild>
-                      <Pencil />
-                    </Icon>
-                  </IconButton>
-                </Tooltip>
+                  <Icon boxSize={6} asChild>
+                    <Pencil />
+                  </Icon>
+                </IconButton>
               }
             />
             {/* Cannot delete logged in user */}
@@ -121,10 +114,6 @@ const Users = () => {
             pageCount: Number(usersData?.totalItems),
             pageParams: pageParams,
             onChangePagination: setPageParams,
-          }}
-          filter={{
-            globalFilter: searchText,
-            setGlobalFilter: setSearchText,
           }}
         >
           <HStack>

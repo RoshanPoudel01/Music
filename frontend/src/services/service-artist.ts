@@ -12,11 +12,18 @@ export interface ArtistResponse {
   created_at: string;
   updated_at: string;
 }
-const useFetchArtists = (pageParams: IPageParams) => {
+const useFetchArtists = ({
+  pageParams,
+  searchParam,
+}: {
+  pageParams: IPageParams;
+  searchParam: string;
+}) => {
   return useFetch<RootInterface<ArtistResponse[]>>({
     url: api.artists.index,
-    queryKey: ["artists", pageParams],
+    queryKey: ["artists", pageParams, searchParam],
     pageParams,
+    searchParam,
   });
 };
 

@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@artist/components/ui/dialog";
-import { Tooltip } from "@artist/components/ui/tooltip";
 import { HStack, Icon, IconButton } from "@chakra-ui/react";
 import { Trash } from "@phosphor-icons/react";
 import { useState } from "react";
@@ -50,24 +49,16 @@ const DeleteAlert: React.FC<IDeleteAlertProps> = ({
     >
       <DialogTrigger asChild>
         {trigger ?? (
-          <Tooltip
-            content="Delete"
-            positioning={{
-              placement: "top",
-            }}
-            closeDelay={100}
+          <IconButton
+            size={"sm"}
+            variant={"subtle"}
+            colorPalette={"red"}
+            aria-label="Delete"
           >
-            <IconButton
-              size={"sm"}
-              variant={"subtle"}
-              colorPalette={"red"}
-              aria-label="Delete"
-            >
-              <Icon asChild boxSize={6} borderRadius={5}>
-                <Trash />
-              </Icon>
-            </IconButton>
-          </Tooltip>
+            <Icon asChild boxSize={6} borderRadius={5}>
+              <Trash />
+            </Icon>
+          </IconButton>
         )}
       </DialogTrigger>
       <DialogContent>

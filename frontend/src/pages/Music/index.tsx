@@ -2,7 +2,6 @@ import { DataTable } from "@artist/components/DataTable";
 import { SearchInput } from "@artist/components/Form";
 import { DeleteAlert } from "@artist/components/Form/Modal";
 import { Button } from "@artist/components/ui/button";
-import { Tooltip } from "@artist/components/ui/tooltip";
 import {
   MusicResponse,
   useDeleteMusic,
@@ -26,6 +25,7 @@ const Music = () => {
   const { data: musicData, isLoading: isMusicGetLoading } = useFetchMusics({
     pageParams,
     id: Number(id),
+    searchParam: searchText,
   });
 
   const [searchParams] = useSearchParams();
@@ -61,22 +61,15 @@ const Music = () => {
             <MusicForm
               rowId={id}
               trigger={
-                <Tooltip
-                  content="Edit Music"
-                  positioning={{
-                    placement: "top",
-                  }}
+                <IconButton
+                  size={"sm"}
+                  variant={"subtle"}
+                  colorPalette={"blue"}
                 >
-                  <IconButton
-                    size={"sm"}
-                    variant={"subtle"}
-                    colorPalette={"blue"}
-                  >
-                    <Icon boxSize={6} asChild>
-                      <Pencil />
-                    </Icon>
-                  </IconButton>
-                </Tooltip>
+                  <Icon boxSize={6} asChild>
+                    <Pencil />
+                  </Icon>
+                </IconButton>
               }
             />
 
@@ -110,10 +103,6 @@ const Music = () => {
             pageCount: Number(musicData?.totalItems),
             pageParams: pageParams,
             onChangePagination: setPageParams,
-          }}
-          filter={{
-            globalFilter: searchText,
-            setGlobalFilter: setSearchText,
           }}
         >
           <Stack>

@@ -9,6 +9,8 @@ export interface IParams {
   isActive?: string;
 }
 
+//all api endpoints
+
 const auth = {
   login: "/users/login",
   register: "/users/register",
